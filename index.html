@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Klotsky Puzzle</title>
+    <style type="text/css" media="screen">
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #303030;
+      }
+
+      .outside {
+        border-radius: 20px;
+        background-color: #6F5339;
+      }
+
+      .inside {
+        width: 300px;
+        height: 300px;
+        margin: 25px;
+        position: relative;
+      }
+
+      .tile {
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 20px;
+        font-size: 3em;
+        background-color: #D2B48C;
+        position: absolute;
+        transition: top 0.1s, left 0.1s;
+        transition-timing-function: ease-out;
+        cursor: pointer;
+      }
+
+      .position_0_0 {
+        left: 0;
+        top: 0;
+      }
+
+      .position_1_0 {
+        left: 100px;
+        top: 0px;
+      }
+
+      .position_2_0 {
+        left: 200px;
+        top: 0px;
+      }
+      
+      .position_0_1 {
+        left: 0px;
+        top: 100px;
+      }
+
+      .position_1_1 {
+        left: 100px;
+        top: 100px;
+      }
+      
+      .position_2_1 {
+        left: 200px;
+        top: 100px;
+      }
+
+      .position_0_2 {
+        left: 0px;
+        top: 200px;
+      }
+
+      .position_1_2 {
+        left: 100px;
+        top: 200px;
+      }
+      
+      .position_2_2 {
+        left: 200px;
+        top: 200px;
+      }
+    </style>
+    <script charset="utf-8">
+      const positions = [
+        'position_0_0',
+        'position_1_0',
+        'position_2_0',
+        'position_0_1',
+        'position_1_1',
+        'position_2_1',
+        'position_0_2',
+        'position_1_2',
+        'position_2_2'
+      ];
+
+      const getXFromPosition = function(position) {
+        return parseInt(position.split('_')[1]);
+      };
+
+      const getYFromPosition = function(position) {
+        return parseInt(position.split('_')[2]);
+      };
+
+      document.addEventListener('DOMContentLoaded', function(event) {
+        let tiles = document.querySelectorAll('.tile');
+        tiles.forEach(function(tile) {
+          tile.addEventListener('click', function(event) {
+            let gap_position = positions.find(function(position) {
+              return document.querySelector(`.${position}`) === null;      
+            });
+            let current_position = tile.classList[1];
+
+            let currentX = getXFromPosition(current_position);
+            let currentY = getYFromPosition(current_position);
+
+            let gapX = getXFromPosition(gap_position);
+            let gapY = getYFromPosition(gap_position);
+
+            let canMove = (currentX === gapX && Math.abs(currentY - gapY) === 1) || (currentY === gapY && Math.abs(currentX - gapX) === 1); 
+
+            if (canMove) {
+              tile.classList.remove(current_position);
+              tile.classList.add(gap_position);
+            } 
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="outside">
+      <div class="inside">
+        <div id="tile_1" class="tile position_0_0">1</div>
+        <div id="tile_2" class="tile position_1_0">2</div>
+        <div id="tile_3" class="tile position_2_0">3</div>
+        <div id="tile_4" class="tile position_0_1">4</div>
+        <div id="tile_5" class="tile position_1_1">5</div>
+        <div id="tile_6" class="tile position_2_1">6</div>
+        <div id="tile_7" class="tile position_0_2">7</div>
+        <div id="tile_8" class="tile position_1_2">8</div>
+      </div>
+    </div>
+  </body>
+</html>
