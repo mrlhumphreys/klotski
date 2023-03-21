@@ -97,6 +97,10 @@
         'position_2_2'
       ];
 
+      const buildPositionClass = function(x, y) {
+        return `position_${x}_${y}`;
+      }
+
       const getXFromPosition = function(position) {
         return parseInt(position.split('_')[1]);
       };
@@ -105,12 +109,30 @@
         return parseInt(position.split('_')[2]);
       };
 
+      const findTileByPosition = function(position) {
+        return document.querySelector(`.${position}`);      
+      }
+
+      const singleMove = function(currentX, currentY, gapX, gapY) {
+       return (currentX === gapX && Math.abs(currentY - gapY) === 1) || (currentY === gapY && Math.abs(currentX - gapX) === 1); 
+      };
+
+      const multiMove = function(currentX, currentY, gapX, gapY) {
+        return (currentX === gapX || currentY === gapY);
+      };
+
+      const moveTile = function(tile, from, to) {
+        tile.classList.remove(from);
+        tile.classList.add(to);
+      }
+
+
       document.addEventListener('DOMContentLoaded', function(event) {
         let tiles = document.querySelectorAll('.tile');
         tiles.forEach(function(tile) {
           tile.addEventListener('click', function(event) {
             let gap_position = positions.find(function(position) {
-              return document.querySelector(`.${position}`) === null;      
+              return findTileByPosition(position) === null;      
             });
             let current_position = tile.classList[1];
 
@@ -120,12 +142,57 @@
             let gapX = getXFromPosition(gap_position);
             let gapY = getYFromPosition(gap_position);
 
-            let canMove = (currentX === gapX && Math.abs(currentY - gapY) === 1) || (currentY === gapY && Math.abs(currentX - gapX) === 1); 
-
-            if (canMove) {
-              tile.classList.remove(current_position);
-              tile.classList.add(gap_position);
-            } 
+            if (singleMove(currentX, currentY, gapX, gapY)) {
+              moveTile(tile, current_position, gap_position);
+            } else if (multiMove(currentX, currentY, gapX, gapY)) {
+              if (currentX === gapX) {
+                if (gapY > currentY) {
+                  let counter = gapY - 1;
+                  let maximum = currentY;
+                  while (counter >= maximum) { 
+                    let position = buildPositionClass(currentX, counter);
+                    let nextPosition = buildPositionClass(currentX, counter + 1);
+                    let t = findTileByPosition(position);
+                    moveTile(t, position, nextPosition); 
+                    counter -= 1;
+                  }
+                } else if (gapY < currentY) {
+                  let counter = gapY + 1; 
+                  let maximum = currentY;
+                  while (counter <= maximum) { 
+                    let position = buildPositionClass(currentX, counter);
+                    let nextPosition = buildPositionClass(currentX, counter - 1);
+                    let t = findTileByPosition(position);
+                    moveTile(t, position, nextPosition); 
+                    counter += 1;
+                  }
+                }
+              } else if (currentY === gapY) {
+                if (gapX > currentX) {
+                  let counter = gapX - 1;
+                  let maximum = currentX;
+                  while (counter >= maximum) {
+                    let position = buildPositionClass(counter, currentY);
+                    let nextPosition = buildPositionClass(counter + 1, currentY);
+                    let t = findTileByPosition(position);
+                    moveTile(t, position, nextPosition); 
+                    counter -= 1;
+                  }
+                } else if (gapX < currentX) {
+                  let counter = gapX + 1;
+                  let maximum = currentX;
+                  while (counter <= maximum) {
+                    let position = buildPositionClass(counter, currentY);
+                    let nextPosition = buildPositionClass(counter - 1, currentY);
+                    let t = findTileByPosition(position);
+                    moveTile(t, position, nextPosition); 
+                    counter += 1;
+                  }
+                }
+              }
+            } else {
+              // no move
+            };
           });
         });
       });
